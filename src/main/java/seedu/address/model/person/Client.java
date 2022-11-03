@@ -52,10 +52,12 @@ public class Client extends Person implements Comparable<Client> {
      * This defines a weaker notion of equality between two client.
      */
     public boolean isSameClient(Client otherClient) {
-        return (otherClient == this)
-            || (otherClient instanceof Client
+        if (otherClient == this) {
+            return true;
+        }
+        return otherClient != null
                 && this.getName().toString().toLowerCase().equals((
-                        otherClient.getName().toString().toLowerCase())));
+                        otherClient.getName().toString().toLowerCase()));
 
     }
 
