@@ -12,8 +12,11 @@ import javafx.collections.transformation.FilteredList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.listing.Listing;
+import seedu.address.model.listing.ListingId;
+import seedu.address.model.meeting.Meeting;
 import seedu.address.model.offer.Offer;
 import seedu.address.model.person.Address;
+import seedu.address.model.person.Client;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 
@@ -25,9 +28,11 @@ public class ModelManager implements Model {
 
     private final AddressBook addressBook;
     private final UserPrefs userPrefs;
+    private final FilteredList<Client> filteredClients;
     private final FilteredList<Person> filteredPersons;
     private final FilteredList<Listing> filteredListings;
     private final FilteredList<Offer> filteredOffers;
+    private final FilteredList<Meeting> filteredMeetings;
 
     /**
      * Initializes a ModelManager with the given addressBook and userPrefs.
@@ -39,9 +44,11 @@ public class ModelManager implements Model {
 
         this.addressBook = new AddressBook(addressBook);
         this.userPrefs = new UserPrefs(userPrefs);
+        filteredClients = new FilteredList<>(this.addressBook.getClientList());
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
         filteredListings = new FilteredList<>(this.addressBook.getListingList());
         filteredOffers = new FilteredList<>(this.addressBook.getOfferList());
+        filteredMeetings = new FilteredList<>(this.addressBook.getMeetingList());
     }
 
     public ModelManager() {
@@ -126,6 +133,51 @@ public class ModelManager implements Model {
 
 
     @Override
+    public boolean hasClient(Client client) {
+        requireNonNull(client);
+        return addressBook.hasClient(client);
+    }
+
+    @Override
+    public void deleteClient(Client target) {
+        addressBook.removeClient(target);
+    }
+
+    @Override
+    public void deleteListingsOwnedBy(Client target) {
+        addressBook.removeAllListingOwnedBy(target);
+    }
+
+    @Override
+    public void deleteOffersMadeBy(Client target) {
+        addressBook.removeAllOffersMadeBy(target);
+    }
+
+    @Override
+    public void deleteMeetingsWith(Client target) {
+        addressBook.removeAllMeetingsWith(target);
+    }
+
+    @Override
+    public void addClient(Client client) {
+        addressBook.addClient(client);
+        updateFilteredClientList(PREDICATE_SHOW_ALL_CLIENTS);
+    }
+
+    @Override
+    public Client getClient(Name name) {
+        return addressBook.getClient(name);
+    }
+
+    @Override
+    public void setClient(Client target, Client editedClient) {
+        requireAllNonNull(target, editedClient);
+
+        addressBook.setClient(target, editedClient);
+    }
+
+
+    @Override
     public boolean hasListing(Listing listing) {
         requireNonNull(listing);
         return addressBook.hasListing(listing);
@@ -147,7 +199,7 @@ public class ModelManager implements Model {
      * @param id id of the listing
      * @return listing with given id
      */
-    public Listing getListing(String id) {
+    public Listing getListing(ListingId id) {
         return addressBook.getListing(id);
     }
 
@@ -155,6 +207,16 @@ public class ModelManager implements Model {
     public void setListing(Listing target, Listing editedListing) {
         requireAllNonNull(target, editedListing);
         addressBook.setListing(target, editedListing);
+    }
+
+    @Override
+    public void deleteOffersFor(Listing target) {
+        addressBook.removeAllOffersFor(target);
+    }
+
+    @Override
+    public void deleteMeetingsAbout(Listing target) {
+        addressBook.removeAllMeetingsAbout(target);
     }
 
     @Override
@@ -186,6 +248,35 @@ public class ModelManager implements Model {
         addressBook.setOffer(target, editedOffer);
     }
 
+    @Override
+    public boolean hasMeeting(Meeting meeting) {
+        requireNonNull(meeting);
+        return addressBook.hasMeeting(meeting);
+    }
+
+    @Override
+    public void deleteMeeting(Meeting meeting) {
+        addressBook.removeMeeting(meeting);
+    }
+
+    @Override
+    public void addMeeting(Meeting meeting) {
+        addressBook.addMeeting(meeting);
+        updateFilteredMeetingList(PREDICATE_SHOW_ALL_MEETINGS);
+    }
+
+    @Override
+    public Meeting getMeeting(Name name, Address address) {
+        return addressBook.getMeeting(name, address);
+    }
+
+    @Override
+    public void setMeeting(Meeting target, Meeting editedMeeting) {
+        requireAllNonNull(target, editedMeeting);
+
+        addressBook.setMeeting(target, editedMeeting);
+    }
+
     //=========== Filtered List Accessors =============================================================
 
     /**
@@ -201,6 +292,18 @@ public class ModelManager implements Model {
     public void updateFilteredPersonList(Predicate<Person> predicate) {
         requireNonNull(predicate);
         filteredPersons.setPredicate(predicate);
+    }
+
+
+    @Override
+    public ObservableList<Client> getFilteredClientList() {
+        return filteredClients;
+    }
+
+    @Override
+    public void updateFilteredClientList(Predicate<Client> predicate) {
+        requireNonNull(predicate);
+        filteredClients.setPredicate(predicate);
     }
 
     @Override
@@ -226,6 +329,17 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public ObservableList<Meeting> getFilteredMeetingList() {
+        return filteredMeetings;
+    }
+
+    @Override
+    public void updateFilteredMeetingList(Predicate<Meeting> predicate) {
+        requireNonNull(predicate);
+        filteredMeetings.setPredicate(predicate);
+    }
+
+    @Override
     public boolean equals(Object obj) {
         // short circuit if same object
         if (obj == this) {
@@ -241,8 +355,9 @@ public class ModelManager implements Model {
         ModelManager other = (ModelManager) obj;
         return addressBook.equals(other.addressBook)
                 && userPrefs.equals(other.userPrefs)
-                && filteredPersons.equals(other.filteredPersons)
+                && filteredClients.equals(other.filteredClients)
                 && filteredListings.equals(other.filteredListings)
-                && filteredOffers.equals(other.filteredOffers);
+                && filteredOffers.equals(other.filteredOffers)
+                && filteredMeetings.equals(other.filteredMeetings);
     }
 }

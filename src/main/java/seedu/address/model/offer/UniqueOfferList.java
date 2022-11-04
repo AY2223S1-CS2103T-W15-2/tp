@@ -3,14 +3,18 @@ package seedu.address.model.offer;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import seedu.address.model.listing.Listing;
 import seedu.address.model.offer.exceptions.DuplicateOfferException;
 import seedu.address.model.offer.exceptions.OfferNotFoundException;
 import seedu.address.model.person.Address;
+import seedu.address.model.person.Client;
 import seedu.address.model.person.Name;
 
 /**
@@ -48,6 +52,7 @@ public class UniqueOfferList implements Iterable<Offer> {
             throw new DuplicateOfferException();
         }
         internalList.add(toAdd);
+        Collections.sort(internalList);
     }
 
     /**
@@ -113,6 +118,24 @@ public class UniqueOfferList implements Iterable<Offer> {
         }
 
         internalList.setAll(offers);
+    }
+
+    /**
+     * Remove all offers made by the client.
+     */
+    public void deleteOffersOfClient(Client toBeRemoved) {
+        List<Offer> newInternalList = internalList.stream().filter(toBeRemoved::doNotHaveOffer)
+            .collect(Collectors.toList());
+        setOffers(newInternalList);
+    }
+
+    /**
+     * Remove all offers related to listing.
+     */
+    public void deleteOffersForListing(Listing toBeRemoved) {
+        List<Offer> newInternalList = internalList.stream().filter(toBeRemoved::doNotHaveOffer)
+            .collect(Collectors.toList());
+        setOffers(newInternalList);
     }
 
     /**

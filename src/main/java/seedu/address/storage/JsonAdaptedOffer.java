@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.model.listing.ListingId;
 import seedu.address.model.offer.Offer;
 import seedu.address.model.offer.Price;
 import seedu.address.model.person.Address;
@@ -54,12 +55,13 @@ public class JsonAdaptedOffer {
         final Name modelName = new Name(name);
 
         if (listing == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Address.class.getSimpleName()));
+            throw new IllegalValueException(
+                String.format(MISSING_FIELD_MESSAGE_FORMAT, ListingId.class.getSimpleName()));
         }
-        if (!Address.isValidAddress(listing)) {
+        if (!ListingId.isValidListingId(listing)) {
             throw new IllegalValueException(Address.MESSAGE_CONSTRAINTS);
         }
-        final Address modelAddress = new Address(listing);
+        final ListingId modelListingId = new ListingId(listing);
 
         if (offerPrice == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Integer.class.getSimpleName()));
@@ -72,6 +74,6 @@ public class JsonAdaptedOffer {
         final Price modelOfferPrice = new Price(offerPrice);
 
 
-        return new Offer(modelName, modelAddress, modelOfferPrice);
+        return new Offer(modelName, modelListingId, modelOfferPrice);
     }
 }

@@ -2,6 +2,9 @@ package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,6 +12,7 @@ import java.util.Set;
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.listing.ListingId;
 import seedu.address.model.offer.Price;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
@@ -22,6 +26,8 @@ import seedu.address.model.tag.Tag;
 public class ParserUtil {
 
     public static final String MESSAGE_INVALID_INDEX = "Index is not a non-zero unsigned integer.";
+
+    public static final String INVALID_DATETIME_FORMAT = "Date time format incorrect! Use yyyy-MM-dd HH:mm";
 
     /**
      * Parses {@code oneBasedIndex} into an {@code Index} and returns it. Leading and trailing whitespaces will be
@@ -133,5 +139,32 @@ public class ParserUtil {
             throw new ParseException(Price.MESSAGE_CONSTRAINTS);
         }
         return new Price(offerPrice);
+    }
+
+    /**
+     * Parses {@code int id} into a {@code ListingId}.
+     */
+    public static ListingId parseListingId(String id) throws ParseException {
+        requireNonNull(id);
+        String trimmedListingID = id.trim();
+        if (!ListingId.isValidListingId(trimmedListingID)) {
+            throw new ParseException(ListingId.MESSAGE_CONSTRAINTS);
+        }
+        return new ListingId(trimmedListingID);
+    }
+
+    /**
+     * Parses {@code String LocalDateTime} into a {@Code LocalDateTime}.
+     */
+    public static LocalDateTime parseDateTime(String dateTime) throws ParseException {
+        requireNonNull(dateTime);
+        String trimmedDateTime = dateTime.trim();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        try {
+            LocalDateTime formattedDate = LocalDateTime.parse(trimmedDateTime, format);
+            return formattedDate;
+        } catch (DateTimeParseException e) {
+            throw new ParseException(INVALID_DATETIME_FORMAT);
+        }
     }
 }

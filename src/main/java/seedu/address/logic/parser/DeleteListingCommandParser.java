@@ -1,5 +1,6 @@
 package seedu.address.logic.parser;
 
+import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.DeleteListingCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
@@ -14,8 +15,8 @@ public class DeleteListingCommandParser implements Parser<DeleteListingCommand> 
      * @throws ParseException if the user input does not conform the expected format
      */
     public DeleteListingCommand parse(String args) throws ParseException {
-        String trimmedId = args.trim();
-        return new DeleteListingCommand(trimmedId);
+        Index index = ParserUtil.parseIndex(args.trim());
+        return new DeleteListingCommand(index);
     }
 
 }

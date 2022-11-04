@@ -3,14 +3,16 @@ package seedu.address.model.listing;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import seedu.address.model.listing.exceptions.DuplicateListingException;
 import seedu.address.model.listing.exceptions.ListingNotFoundException;
-import seedu.address.model.person.exceptions.DuplicatePersonException;
+import seedu.address.model.person.Client;
 
 /**
  * A list of persons that enforces uniqueness between its elements and does not allow nulls.
@@ -47,6 +49,7 @@ public class UniqueListingList implements Iterable<Listing> {
             throw new DuplicateListingException();
         }
         internalList.add(toAdd);
+        Collections.sort(internalList);
     }
 
     /**
@@ -54,9 +57,9 @@ public class UniqueListingList implements Iterable<Listing> {
      * @param id id of the listing
      * @return listing with given id
      */
-    public Listing getListing(String id) {
+    public Listing getListing(ListingId id) {
         for (Listing listing : internalList) {
-            if (listing.getId().equals(id)) {
+            if (listing.getId() == (id)) {
                 return listing;
             }
         }
@@ -77,7 +80,7 @@ public class UniqueListingList implements Iterable<Listing> {
         }
 
         if (!target.isSameListing(editedListing) && contains(editedListing)) {
-            throw new DuplicatePersonException();
+            throw new DuplicateListingException();
         }
 
         internalList.set(index, editedListing);
@@ -110,6 +113,15 @@ public class UniqueListingList implements Iterable<Listing> {
         }
 
         internalList.setAll(listings);
+    }
+
+    /**
+     * Remove all listing owned by the client.
+     */
+    public void deleteListingsOfClient(Client toBeRemoved) {
+        List<Listing> newInternalList = internalList.stream().filter(toBeRemoved::doNotOwn)
+            .collect(Collectors.toList());
+        setListings(newInternalList);
     }
 
     /**
