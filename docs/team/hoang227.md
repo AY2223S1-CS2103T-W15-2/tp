@@ -4,7 +4,7 @@
 **Code contributed:** [RepoSense Link](https://nus-cs2103-ay2223s1.github.io/tp-dashboard/?search=ama-chi&breakdown=true&sort=groupTitle&sortWithin=title&since=2022-09-16&timeframe=commit&mergegroup=&groupSelect=groupByRepos&checkedFileTypes=docs~functional-code~test-code~other)
 
 **Enhancements implemented:**
-* Implemented Listing Class
+* Implemented Listing Class.
 * Implemented auto-sorting mechanism for lists.
 * Implemented cascading-delete mechanism for lists.
 
